@@ -1,59 +1,66 @@
-#기본 IMPORT
-from flask import Flask, request
+# 기본 IMPORT
 import json
 import random
+from typing import List
 
-app=Flask(__name__)
+from flask import Flask, request
 
-#기본 리스트
-apply_student_1 = []
-apply_student_2 = []
-apply_student = [apply_student_1, apply_student_2]
+APPLY_STUDENT_FILENAME = "apply_student.json"
 
-#JSON 불러오기
-def load():
-    with open('apply_student.json', 'r', encoding='utf-8') as apply_rate:
-        temp = apply_rate.read()
-        apply_student = json.loads(temp)
-        return apply_student
-   
-#JSON 저장하기
-def save():
-    with open('apply_student.json', 'w', encoding='utf-8') as apply_rate:
-        apply_rate.write(json.dumps(apply_student))
+data: List[List]
 
-#신청[apply(학번, 교시)]
-def apply(student_number, period):
-    #기존에 있으면 추가 X
-    for find in apply_student:
-        for search in find:
-            if search == student_number:
+app = Flask(__name__)
+
+
+# JSON 불러오기
+def load() -> List[List]:
+    try:
+        with open(APPLY_STUDENT_FILENAME, 'r', encoding='utf-8') as f:
+            return json.loads(f.read())
+    except FileNotFoundError:
+        return [[], []]
+
+
+# JSON 저장하기
+def save(apply_student: List[List]):
+    with open(APPLY_STUDENT_FILENAME, 'w', encoding='utf-8') as f:
+        f.write(json.dumps(apply_student))
+
+
+# 신청[apply(학번, 교시)]
+def apply(apply_student: List[List], student_number: int, period: int):
+    # 기존에 있으면 추가 X
+    for one_period in apply_student:
+        for student in one_period:
+            if student == student_number:
                 return
-            
+
     if period <= 2:
         apply_student[period - 1].append(student_number)
+    else:
+        raise Exception("period out of range.")
 
 
-#취소[delete(학번)]
-def delete(student_number):
-    for find in apply_student:
-        i = 0
-        for search in find:
-            if search == student_number:
-                find.pop(i)
-            i += 1
+# 취소[delete(학번)]
+def delete(apply_student: List[List], student_number: int):
+    for one_period in apply_student:
+        if student_number in one_period:
+            one_period.remove(student_number)
+            return
 
-#추첨[pop_random(인원수)]
-def pop_random(count):
-    
-    for find in apply_student:
-        if len(find) <= count:
+
+# 추첨[pop_random(인원수)]
+def pop_random(apply_student: List[List], count: int):
+    for one_period in apply_student:
+        if len(one_period) <= count:
             continue
         else:
-            while len(find) > count:
-                find.pop(random.randrange(0, len(find) - 1))
+            while len(one_period) > count:
+                one_period.pop(random.randrange(0, len(one_period) - 1))
 
-#신청 현황 출력하는 함수.. 필요 없다고 판단되니 주석처리 해놓음!!
+
+# 신청 현황 출력하는 함수.. 필요 없다고 판단되니 주석처리 해놓음!!
+# 굿
 # def print_apply():
 #    for n in apply_student:
 #        print(n)
@@ -61,27 +68,37 @@ def pop_random(count):
 
 @app.route('/', methods=['GET'])
 def get_info():
-    global apply_student
-    return json.dumps(apply_student)
+    global data
+    return json.dumps(data)
+
 
 @app.route('/apply', methods=['POST'])
 def admit():
-    global apply_student #다 적어놓기
-    apply_student = load()
+    global data  # 다 적어놓기
+    data = load()
     number = int(request.headers.get("student_number"))
     period = int(request.headers.get("period"))
-    apply(number, period)
-    save()
+    apply(data, number, period)
+    save(data)
+    return "Success"
+
 
 @app.route('/delete', methods=['POST'])
-def disadmit():
-    global apply_student
-    apply_student = load()
+def cancel():
+    global data
+    data = load()
     number = int(request.headers.get("student_number"))
-    delete(number)
-    save()
+    delete(data, number)
+    save(data)
+    return "Success"
+
+
+def main():
+    global data
+    data = load()
+    app.run()
+    save(data)
+
 
 if __name__ == '__main__':
-    apply_student = load()
-    app.run()
-    save()
+    main()
