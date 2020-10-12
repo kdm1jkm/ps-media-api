@@ -2,6 +2,7 @@
 import json
 import random
 from typing import List
+from flask_cors import CORS
 
 from flask import Flask, request
 
@@ -10,6 +11,8 @@ APPLY_STUDENT_FILENAME = "apply_student.json"
 data: List[List]
 
 app = Flask(__name__)
+
+CORS(app)
 
 
 # JSON 불러오기
