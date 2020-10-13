@@ -79,8 +79,11 @@ def get_info():
 def admit():
     global data  # 다 적어놓기
     data = load()
-    number = int(request.headers.get("student_number"))
-    period = int(request.headers.get("period"))
+
+    json_data = request.get_json()
+
+    number = int(json_data["student_number"])
+    period = int(json_data["period"])
     apply(data, number, period)
     save(data)
     return "Success"
@@ -90,7 +93,8 @@ def admit():
 def cancel():
     global data
     data = load()
-    number = int(request.headers.get("student_number"))
+    json_data = request.get_json()
+    number = int(json_data["student_number"])
     delete(data, number)
     save(data)
     return "Success"
