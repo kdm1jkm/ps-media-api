@@ -14,6 +14,8 @@ app = Flask(__name__)
 
 CORS(app)
 
+init()
+
 
 # JSON 불러오기
 def load() -> List[List]:
@@ -100,9 +102,13 @@ def cancel():
     return "Success"
 
 
-def main():
+def init():
     global data
     data = load()
+
+
+def main():
+    init()
     app.run()
     save(data)
 
