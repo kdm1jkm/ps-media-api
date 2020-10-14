@@ -14,8 +14,6 @@ app = Flask(__name__)
 
 CORS(app)
 
-init()
-
 
 # JSON 불러오기
 def load() -> List[List]:
