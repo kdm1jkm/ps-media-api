@@ -63,7 +63,6 @@ def pop_random(apply_student: List[List], count: int):
 
 
 # 신청 현황 출력하는 함수.. 필요 없다고 판단되니 주석처리 해놓음!!
-# 굿
 # def print_apply():
 #    for n in apply_student:
 #        print(n)
