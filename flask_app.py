@@ -107,5 +107,6 @@ def init():
 
 
 init()
-app.run()
-save(data)
+
+if __name__=="__main__":
+    app.run()
