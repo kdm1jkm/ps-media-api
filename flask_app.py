@@ -104,11 +104,6 @@ def init():
     data = load()
 
 
-def main():
-    init()
-    app.run()
-    save(data)
-
-
-if __name__ == '__main__':
-    main()
+init()
+app.run()
+save(data)
