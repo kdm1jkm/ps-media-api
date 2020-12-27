@@ -1,4 +1,3 @@
-# 기본 IMPORT
 import json
 import random
 from typing import List
@@ -17,7 +16,6 @@ CORS(app)
 data = []
 
 
-# JSON 불러오기
 def load() -> List[List]:
     try:
         with open(APPLY_STUDENT_FILENAME, 'r', encoding='utf-8') as f:
@@ -26,15 +24,12 @@ def load() -> List[List]:
         return [[], []]
 
 
-# JSON 저장하기
 def save(apply_student: List[List]):
     with open(APPLY_STUDENT_FILENAME, 'w', encoding='utf-8') as f:
         f.write(json.dumps(apply_student))
 
 
-# 신청[apply(학번, 교시)]
 def apply(apply_student: List[List], student_number: int, period: int):
-    # 기존에 있으면 추가 X
     for one_period in apply_student:
         for student in one_period:
             if student == student_number:
@@ -46,7 +41,6 @@ def apply(apply_student: List[List], student_number: int, period: int):
         raise Exception("period out of range.")
 
 
-# 취소[delete(학번)]
 def delete(apply_student: List[List], student_number: int):
     for one_period in apply_student:
         if student_number in one_period:
@@ -54,7 +48,6 @@ def delete(apply_student: List[List], student_number: int):
             return
 
 
-# 추첨[pop_random(인원수)]
 def pop_random(apply_student: List[List], count: int):
     for one_period in apply_student:
         if len(one_period) <= count:
@@ -64,7 +57,6 @@ def pop_random(apply_student: List[List], count: int):
                 one_period.pop(random.randrange(0, len(one_period) - 1))
 
 
-# 신청 현황 출력하는 함수.. 필요 없다고 판단되니 주석처리 해놓음!!
 # def print_apply():
 #    for n in apply_student:
 #        print(n)
@@ -78,7 +70,7 @@ def get_info():
 
 @app.route('/apply', methods=['POST'])
 def admit():
-    global data  # 다 적어놓기
+    global data  
     data = load()
 
     json_data = request.get_json()
